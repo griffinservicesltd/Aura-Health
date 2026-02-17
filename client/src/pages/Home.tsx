@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Check, 
   ShieldCheck, 
@@ -14,7 +14,10 @@ import {
   ArrowRight,
   Clock,
   Zap,
-  Moon
+  Moon,
+  Info,
+  Truck,
+  Heart
 } from "lucide-react";
 
 import { CartDrawer } from "@/components/CartDrawer";
@@ -25,70 +28,42 @@ import gutImage from "@/assets/images/gut-health.png";
 import inflammationImage from "@/assets/images/inflammation.png";
 import sleepImage from "@/assets/images/sleep.png";
 
-// Data
-const products = [
-  {
-    id: "gut",
-    title: "Gut Harmony",
-    category: "Gut Health",
-    description: "Complete digestive support with 50 Billion CFU Probiotics & Prebiotics.",
-    price: 49.00,
-    subscriptionPrice: 39.20,
-    image: gutImage,
-    accent: "bg-emerald-50 text-emerald-900",
-    badge: "Bestseller"
-  },
-  {
-    id: "inflammation",
-    title: "Relief Complex",
-    category: "Inflammation",
-    description: "Advanced Curcumin & Boswellia blend for systemic inflammation support.",
-    price: 54.00,
-    subscriptionPrice: 43.20,
-    image: inflammationImage,
-    accent: "bg-amber-50 text-amber-900",
-    badge: "New Formula"
-  },
-  {
-    id: "sleep",
-    title: "Deep Rest",
-    category: "Sleep",
-    description: "Non-habit forming Magnesium & L-Theanine for restorative sleep cycles.",
-    price: 42.00,
-    subscriptionPrice: 33.60,
-    image: sleepImage,
-    accent: "bg-indigo-50 text-indigo-900",
-    badge: "Clinically Tested"
-  }
+// UK-Optimized Product Data
+const categories = [
+  { id: 'gut', name: 'Gut Health', icon: <Heart className="h-4 w-4" /> },
+  { id: 'inflammation', name: 'Inflammation', icon: <Zap className="h-4 w-4" /> },
+  { id: 'sleep', name: 'Sleep', icon: <Moon className="h-4 w-4" /> }
 ];
 
-const scienceCards = [
-  {
-    icon: <Beaker className="h-6 w-6" />,
-    title: "Gut Microbiome",
-    description: "Your gut is your second brain. Our synbiotic blend restores diversity to your microbiome, impacting mood, immunity, and digestion.",
-    details: ["L. Acidophilus NCFM", "B. Lactis Bi-07", "Organic Prebiotics"]
-  },
-  {
-    icon: <Zap className="h-6 w-6" />,
-    title: "Systemic Inflammation",
-    description: "Chronic inflammation is the root of modern ailment. We use bio-available Curcumin C3 Complex® to target inflammatory markers.",
-    details: ["95% Curcuminoids", "Black Pepper Extract", "Boswellia Serrata"]
-  },
-  {
-    icon: <Moon className="h-6 w-6" />,
-    title: "Restorative Sleep",
-    description: "Deep sleep cleanses the brain. We skip melatonin in favor of Magnesium Glycinate to support natural circadian rhythms without grogginess.",
-    details: ["Magnesium Bisglycinate", "L-Theanine", "Apigenin"]
-  }
+const products = [
+  // Gut Health (5 products)
+  { id: "gut-1", title: "Gut Harmony Pro", category: "gut", description: "50 Billion CFU multi-strain probiotic with prebiotic fibre.", price: 39.99, subscriptionPrice: 31.99, image: gutImage, badge: "Best Seller" },
+  { id: "gut-2", title: "Digestive Enzyme Plus", category: "gut", description: "Broad-spectrum enzymes for optimal nutrient absorption.", price: 24.99, subscriptionPrice: 19.99, image: gutImage },
+  { id: "gut-3", title: "Saccharomyces Boulardii", category: "gut", description: "Targeted yeast probiotic for travel and intensive support.", price: 29.99, subscriptionPrice: 23.99, image: gutImage },
+  { id: "gut-4", title: "L-Glutamine Pure", category: "gut", description: "Pharmaceutical grade powder for gut lining integrity.", price: 22.99, subscriptionPrice: 18.39, image: gutImage },
+  { id: "gut-5", title: "Daily Fibre Complex", category: "gut", description: "Psyllium and flaxseed blend for regular bowel health.", price: 19.99, subscriptionPrice: 15.99, image: gutImage },
+
+  // Inflammation (5 products)
+  { id: "inf-1", title: "Curcumin C3 Complex", category: "inflammation", description: "High-potency turmeric extract with BioPerine for absorption.", price: 44.99, subscriptionPrice: 35.99, image: inflammationImage, badge: "Clinical Grade" },
+  { id: "inf-2", title: "Omega-3 Pure EPA/DHA", category: "inflammation", description: "Wild-caught, molecularly distilled fish oil (IFOS certified).", price: 34.99, subscriptionPrice: 27.99, image: inflammationImage },
+  { id: "inf-3", title: "Boswellia Serrata", category: "inflammation", description: "Traditional herbal support for joint comfort and mobility.", price: 26.99, subscriptionPrice: 21.59, image: inflammationImage },
+  { id: "inf-4", title: "Quercetin & Bromelain", category: "inflammation", description: "Synergistic antioxidant blend for seasonal immune support.", price: 28.99, subscriptionPrice: 23.19, image: inflammationImage },
+  { id: "inf-5", title: "Tart Cherry Extract", category: "inflammation", description: "Rich in anthocyanins for post-exercise recovery support.", price: 23.99, subscriptionPrice: 19.19, image: inflammationImage },
+
+  // Sleep (5 products)
+  { id: "slp-1", title: "Deep Rest Glycinate", category: "sleep", description: "Highly absorbable magnesium for muscle relaxation and calm.", price: 21.99, subscriptionPrice: 17.59, image: sleepImage, badge: "Award Winner" },
+  { id: "slp-2", title: "Nightly Calm Blend", category: "sleep", description: "L-Theanine, Lemon Balm and Passionflower extract.", price: 25.99, subscriptionPrice: 20.79, image: sleepImage },
+  { id: "slp-3", title: "5-HTP Serotonin Support", category: "sleep", description: "Natural precursor to help regulate sleep-wake cycles.", price: 27.99, subscriptionPrice: 22.39, image: sleepImage },
+  { id: "slp-4", title: "Valerian Root Elite", category: "sleep", description: "Standardised extract for shorter sleep latency.", price: 18.99, subscriptionPrice: 15.19, image: sleepImage },
+  { id: "slp-5", title: "Sleep Ritual Tea", category: "sleep", description: "Organic chamomile and lavender loose leaf blend.", price: 14.99, subscriptionPrice: 11.99, image: sleepImage }
 ];
 
 export default function Home() {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [isScrolled, setIsScrolled] = useState(false);
   const [subscriptionMode, setSubscriptionMode] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('gut');
 
-  // Scroll listener
   React.useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
@@ -130,316 +105,274 @@ export default function Home() {
     }));
   };
 
-  return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20">
-      
-      {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/80 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"}`}>
-        <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Menu className="h-6 w-6 md:hidden" />
-            <a href="/" className="font-serif text-2xl font-semibold tracking-tight text-primary">Aura Health.</a>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-8 font-medium text-sm text-foreground/80">
-            <a href="#shop" className="hover:text-primary transition-colors">Shop</a>
-            <a href="#science" className="hover:text-primary transition-colors">The Science</a>
-            <a href="#about" className="hover:text-primary transition-colors">Our Story</a>
-          </div>
+  const filteredProducts = products.filter(p => p.category === activeCategory);
 
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" className="hidden sm:flex text-sm font-medium">Log In</Button>
-            <CartDrawer items={cartItems} onRemove={removeFromCart} onUpdateQuantity={updateQuantity} />
+  return (
+    <div className="min-h-screen bg-[#fafafa] text-foreground font-sans selection:bg-primary/20">
+      
+      {/* UK Banner */}
+      <div className="bg-primary text-white py-2 text-center text-xs font-medium tracking-wide">
+        FREE NEXT-DAY UK DELIVERY ON ORDERS OVER £50 • TRUSTED BY 5,000+ CUSTOMERS
+      </div>
+
+      {/* Navigation */}
+      <nav className={`fixed top-8 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "py-2" : "py-4"}`}>
+        <div className="container mx-auto px-4">
+          <div className={`flex items-center justify-between bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg rounded-full px-6 py-3 transition-all ${isScrolled ? "mx-4 md:mx-12" : "mx-0"}`}>
+            <div className="flex items-center gap-2">
+              <img src="/aura-logo.png" alt="Aura Health" className="h-8 w-8 object-contain" onError={(e) => e.currentTarget.style.display='none'} />
+              <a href="/" className="font-serif text-xl font-bold tracking-tight text-primary">Aura Health</a>
+            </div>
+            
+            <div className="hidden md:flex items-center gap-8 font-medium text-sm">
+              <a href="#shop" className="hover:text-primary transition-colors">Shop All</a>
+              <a href="#science" className="hover:text-primary transition-colors">The Science</a>
+              <a href="#about" className="hover:text-primary transition-colors">Our Ethos</a>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <CartDrawer items={cartItems} onRemove={removeFromCart} onUpdateQuantity={updateQuantity} />
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+      <section className="relative pt-48 pb-32 overflow-hidden bg-gradient-to-b from-[#f0f4f4] to-[#fafafa]">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 clip-path-slant hidden lg:block"></div>
         <div className="container mx-auto px-4 md:px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 z-10">
-              <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 px-4 py-1.5 text-xs uppercase tracking-wider">
-                Clinical Grade Wellness
-              </Badge>
-              <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-foreground">
-                Science-Backed <br />
-                <span className="text-primary italic">Inner Harmony</span>
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-8 z-10"
+            >
+              <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-primary/10 shadow-sm">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Est. London 2024</span>
+              </div>
+              <h1 className="font-serif text-6xl md:text-7xl lg:text-8xl leading-[1] text-foreground font-medium">
+                The New <br />
+                <span className="italic font-normal">Standard</span> of <br />
+                Pure Wellness.
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed">
-                Advanced formulations for Gut Health, Inflammation, and Sleep. 
-                Pure, potent, and third-party tested for your peace of mind.
+              <p className="text-lg text-muted-foreground max-w-md leading-relaxed">
+                Clinically formulated in the UK. We bridge the gap between rigorous science and holistic health.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Button size="lg" className="h-12 px-8 text-base bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 rounded-full">
-                  Shop Formulations
+              <div className="flex items-center gap-4 pt-4">
+                <Button size="lg" className="h-14 px-10 text-base bg-primary hover:bg-primary/90 text-white rounded-full shadow-xl shadow-primary/20 group">
+                  Start Your Ritual <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
-                <Button size="lg" variant="outline" className="h-12 px-8 text-base rounded-full border-2 hover:bg-secondary/50">
-                  Read the Science
-                </Button>
-              </div>
-              
-              <div className="pt-8 flex items-center gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-5 w-5 text-primary" />
-                  <span>FDA Registered Facility</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Beaker className="h-5 w-5 text-primary" />
-                  <span>Clinically Dosed</span>
+                <div className="flex -space-x-3 overflow-hidden ml-4">
+                   {[1,2,3,4].map(i => (
+                     <div key={i} className="inline-block h-10 w-10 rounded-full ring-4 ring-white bg-secondary flex items-center justify-center text-[10px] font-bold">AH</div>
+                   ))}
+                   <div className="inline-block h-10 w-10 rounded-full ring-4 ring-white bg-primary text-white flex items-center justify-center text-[10px] font-bold">5k+</div>
                 </div>
               </div>
-            </div>
+            </motion.div>
             
             <div className="relative">
-              <div className="absolute inset-0 bg-secondary/50 rounded-[2rem] -rotate-3 scale-95 z-0"></div>
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="relative z-10 rounded-[2rem] overflow-hidden shadow-2xl"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1 }}
+                className="relative z-10 rounded-[3rem] overflow-hidden shadow-3xl aspect-[4/5] bg-secondary"
               >
-                <img 
-                  src={heroImage} 
-                  alt="Woman holding water glass" 
-                  className="w-full h-full object-cover aspect-[4/5]"
-                />
+                <img src={heroImage} alt="Wellness" className="w-full h-full object-cover mix-blend-multiply opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               </motion.div>
+              <div className="absolute -bottom-10 -left-10 bg-white p-8 rounded-3xl shadow-2xl border border-primary/5 z-20 max-w-[240px] hidden md:block">
+                <div className="flex items-center gap-2 mb-2 text-amber-500">
+                  {[1,2,3,4,5].map(i => <Star key={i} className="h-3 w-3 fill-current" />)}
+                </div>
+                <p className="text-sm italic text-foreground">"The Gut Harmony Pro has completely transformed my daily energy levels. Essential."</p>
+                <p className="text-[10px] font-bold uppercase mt-4 text-primary">— Sarah J., London</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Products Section */}
-      <section id="shop" className="py-24 bg-white">
+      {/* Shop Section */}
+      <section id="shop" className="py-32 bg-white">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-            <div className="max-w-xl">
-              <h2 className="font-serif text-4xl md:text-5xl mb-4 text-foreground">Curated Essentials</h2>
-              <p className="text-muted-foreground text-lg">Targeted support for the three pillars of modern wellness.</p>
+          <div className="max-w-4xl mx-auto text-center mb-20 space-y-6">
+            <h2 className="font-serif text-5xl md:text-6xl text-foreground">Targeted Rituals.</h2>
+            <p className="text-muted-foreground text-xl">Select a category to explore our clinical-grade formulations.</p>
+            
+            {/* Category Switcher */}
+            <div className="flex flex-wrap justify-center gap-4 pt-8">
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`flex items-center gap-2 px-8 py-4 rounded-full border-2 transition-all duration-300 font-medium ${activeCategory === cat.id ? 'bg-primary border-primary text-white shadow-lg' : 'bg-white border-primary/10 text-muted-foreground hover:border-primary/30'}`}
+                >
+                  {cat.icon}
+                  {cat.name}
+                </button>
+              ))}
             </div>
             
-            <div className="flex items-center gap-3 bg-secondary/50 p-2 rounded-full border">
-              <span className={`text-sm font-medium px-4 py-1.5 rounded-full transition-all ${!subscriptionMode ? 'bg-white shadow-sm text-foreground' : 'text-muted-foreground'}`}>One-time</span>
-              <Switch checked={subscriptionMode} onCheckedChange={setSubscriptionMode} className="data-[state=checked]:bg-primary" />
-              <span className={`text-sm font-medium px-4 py-1.5 rounded-full transition-all ${subscriptionMode ? 'bg-white shadow-sm text-primary' : 'text-muted-foreground'}`}>
-                Subscribe & Save 20%
-              </span>
+            <div className="flex items-center justify-center gap-4 pt-12">
+               <span className="text-sm font-bold text-muted-foreground">ONE-TIME</span>
+               <Switch checked={subscriptionMode} onCheckedChange={setSubscriptionMode} className="data-[state=checked]:bg-primary" />
+               <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full italic">SUBSCRIBE & SAVE 20%</span>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {products.map((product) => (
-              <motion.div 
-                key={product.id}
-                whileHover={{ y: -5 }}
-                className="group relative bg-white rounded-2xl border hover:border-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5"
-              >
-                {product.badge && (
-                  <div className="absolute top-4 left-4 z-10 bg-foreground text-background text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                    {product.badge}
-                  </div>
-                )}
-                
-                <div className={`h-80 w-full flex items-center justify-center p-8 rounded-t-2xl ${product.accent} bg-opacity-30`}>
-                  <img src={product.image} alt={product.title} className="h-full w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                
-                <div className="p-8">
-                  <div className="text-xs font-bold text-primary uppercase tracking-widest mb-2">{product.category}</div>
-                  <h3 className="font-serif text-2xl font-medium mb-3">{product.title}</h3>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">{product.description}</p>
-                  
-                  <div className="flex items-center justify-between mt-auto">
-                    <div className="flex flex-col">
-                      <span className="text-2xl font-serif font-medium">
-                        ${subscriptionMode ? product.subscriptionPrice.toFixed(2) : product.price.toFixed(2)}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            <AnimatePresence mode="wait">
+              {filteredProducts.map((product) => (
+                <motion.div 
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4 }}
+                  className="group bg-[#fcfcfc] rounded-3xl border border-primary/5 p-6 hover:bg-white hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500"
+                >
+                  <div className="relative aspect-square mb-6 bg-secondary/20 rounded-2xl flex items-center justify-center p-4 overflow-hidden">
+                    {product.badge && (
+                      <span className="absolute top-3 left-3 bg-white/90 backdrop-blur shadow-sm text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md z-10 border border-primary/5">
+                        {product.badge}
                       </span>
-                      {subscriptionMode && (
-                        <span className="text-xs text-muted-foreground line-through decoration-destructive/50">
-                          ${product.price.toFixed(2)}
-                        </span>
-                      )}
+                    )}
+                    <img src={product.image} alt={product.title} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" />
+                  </div>
+                  
+                  <h3 className="font-serif text-lg font-bold mb-2 group-hover:text-primary transition-colors">{product.title}</h3>
+                  <p className="text-xs text-muted-foreground mb-6 line-clamp-2 leading-relaxed">{product.description}</p>
+                  
+                  <div className="flex items-center justify-between pt-4 border-t border-primary/5">
+                    <div className="flex flex-col">
+                      <span className="text-lg font-serif font-bold">£{subscriptionMode ? product.subscriptionPrice.toFixed(2) : product.price.toFixed(2)}</span>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{subscriptionMode ? 'Per Month' : 'Single'}</span>
                     </div>
                     <Button 
+                      size="icon" 
                       onClick={() => addToCart(product)} 
-                      className="rounded-full px-6 bg-foreground text-background hover:bg-primary transition-colors"
+                      className="rounded-full h-10 w-10 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all shadow-none"
                     >
-                      Add to Cart
+                      +
                     </Button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Science Section */}
-      <section id="science" className="py-24 bg-secondary/30 relative overflow-hidden">
-        {/* Abstract shapes background */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-
-        <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="font-serif text-4xl md:text-5xl mb-6">The Science of Wellbeing</h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              We don't believe in magic pills. We believe in clinical doses, bioavailable ingredients, 
-              and transparent labeling. Every formula is backed by peer-reviewed research.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
-            <div className="grid gap-8">
-              {scienceCards.map((card, idx) => (
-                <motion.div 
-                  key={idx}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="bg-white p-8 rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="bg-primary/10 p-3 rounded-full text-primary">
-                      {card.icon}
-                    </div>
-                    <div>
-                      <h3 className="font-serif text-xl font-medium mb-2">{card.title}</h3>
-                      <p className="text-muted-foreground mb-4 leading-relaxed text-sm">
-                        {card.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {card.details.map((detail, i) => (
-                          <span key={i} className="text-xs font-medium bg-secondary px-2.5 py-1 rounded-md text-secondary-foreground">
-                            {detail}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 </motion.div>
               ))}
-            </div>
-
-            <div className="lg:sticky lg:top-24">
-              <div className="relative">
-                <div className="absolute -inset-4 bg-gradient-to-tr from-primary/10 to-indigo-100/20 rounded-xl blur-xl"></div>
-                <SupplementFacts />
-                
-                <div className="mt-8 text-center">
-                  <p className="text-sm font-medium text-primary flex items-center justify-center gap-2">
-                    <Check className="h-4 w-4" /> Full Transparency Labeling
-                  </p>
-                </div>
-              </div>
-            </div>
+            </AnimatePresence>
           </div>
         </div>
       </section>
 
-      {/* Quality Assurance */}
-      <section className="py-20 border-y border-border">
+      {/* Science & Labeling */}
+      <section id="science" className="py-32 bg-secondary/10">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div className="flex flex-col items-center gap-3">
-              <div className="h-16 w-16 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-700 mb-2">
-                <Leaf className="h-8 w-8" />
+          <div className="grid lg:grid-cols-2 gap-24 items-center">
+            <div className="space-y-12">
+              <div className="space-y-6">
+                <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-4 py-1">TRANSPARENCY FIRST</Badge>
+                <h2 className="font-serif text-5xl md:text-6xl">Radical <br /><span className="italic font-normal">Ingredients</span> Truth.</h2>
+                <p className="text-lg text-muted-foreground">Every milligram is accounted for. No proprietary blends. No hidden fillers. Just clinical potency.</p>
               </div>
-              <h4 className="font-serif font-bold text-lg">100% Vegan</h4>
-              <p className="text-xs text-muted-foreground max-w-[150px]">Plant-based ingredients with zero animal byproducts.</p>
+
+              <div className="grid gap-6">
+                <div className="flex gap-4 p-6 bg-white rounded-2xl shadow-sm border border-primary/5">
+                  <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary shrink-0"><ShieldCheck /></div>
+                  <div>
+                    <h4 className="font-bold text-base mb-1">UK MHRA Compliant</h4>
+                    <p className="text-sm text-muted-foreground">Manufactured to strict Good Manufacturing Practice (GMP) standards in the UK.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4 p-6 bg-white rounded-2xl shadow-sm border border-primary/5">
+                  <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary shrink-0"><Truck /></div>
+                  <div>
+                    <h4 className="font-bold text-base mb-1">Carbon Neutral Shipping</h4>
+                    <p className="text-sm text-muted-foreground">100% plastic-free packaging, shipped carbon-neutrally via Royal Mail & DPD.</p>
+                  </div>
+                </div>
+              </div>
             </div>
             
-            <div className="flex flex-col items-center gap-3">
-              <div className="h-16 w-16 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 mb-2">
-                <ShieldCheck className="h-8 w-8" />
+            <motion.div 
+              initial={{ opacity: 0, rotate: 2 }}
+              whileInView={{ opacity: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="absolute -inset-10 bg-primary/5 rounded-full blur-[100px]"></div>
+              <SupplementFacts />
+              <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-xl border border-primary/10 flex items-center gap-3">
+                 <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-white"><Check className="h-4 w-4" /></div>
+                 <span className="text-[10px] font-bold uppercase tracking-widest">3rd Party Tested <br />for Purity</span>
               </div>
-              <h4 className="font-serif font-bold text-lg">Third-Party Tested</h4>
-              <p className="text-xs text-muted-foreground max-w-[150px]">Every batch tested for purity, potency, and heavy metals.</p>
-            </div>
-
-            <div className="flex flex-col items-center gap-3">
-              <div className="h-16 w-16 rounded-full bg-amber-50 flex items-center justify-center text-amber-700 mb-2">
-                <Beaker className="h-8 w-8" />
-              </div>
-              <h4 className="font-serif font-bold text-lg">Non-GMO</h4>
-              <p className="text-xs text-muted-foreground max-w-[150px]">Sourced from sustainable, non-genetically modified crops.</p>
-            </div>
-
-            <div className="flex flex-col items-center gap-3">
-              <div className="h-16 w-16 rounded-full bg-purple-50 flex items-center justify-center text-purple-700 mb-2">
-                <Star className="h-8 w-8" />
-              </div>
-              <h4 className="font-serif font-bold text-lg">GMP Certified</h4>
-              <p className="text-xs text-muted-foreground max-w-[150px]">Manufactured in FDA-registered GMP compliant facilities.</p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-foreground text-background pt-20 pb-10">
+      <footer className="bg-foreground text-background pt-32 pb-12">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="grid md:grid-cols-4 gap-12 mb-16">
-            <div className="md:col-span-1">
-              <a href="/" className="font-serif text-3xl font-semibold tracking-tight text-white mb-6 block">Aura Health.</a>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Elevating the standard of wellness through science-backed formulations and radical transparency.
+          <div className="grid md:grid-cols-4 gap-16 mb-24">
+            <div className="space-y-8">
+              <a href="/" className="font-serif text-3xl font-bold tracking-tight text-white block">Aura Health.</a>
+              <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
+                Premium, science-backed nutritional supplements for the conscious individual.
               </p>
+              <div className="flex gap-4">
+                 <div className="h-8 w-8 rounded-full bg-white/10 hover:bg-primary transition-colors cursor-pointer"></div>
+                 <div className="h-8 w-8 rounded-full bg-white/10 hover:bg-primary transition-colors cursor-pointer"></div>
+                 <div className="h-8 w-8 rounded-full bg-white/10 hover:bg-primary transition-colors cursor-pointer"></div>
+              </div>
             </div>
             
             <div>
-              <h5 className="font-serif text-lg mb-6 text-white">Shop</h5>
+              <h5 className="font-serif text-lg mb-8 text-white">The Collection</h5>
               <ul className="space-y-4 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-primary transition-colors">Gut Health</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Inflammation</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Sleep</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Bundles</a></li>
+                {categories.map(c => <li key={c.id}><a href="#" className="hover:text-primary transition-colors">{c.name}</a></li>)}
+                <li><a href="#" className="hover:text-primary transition-colors">Digital Gift Cards</a></li>
               </ul>
             </div>
 
             <div>
-              <h5 className="font-serif text-lg mb-6 text-white">Company</h5>
+              <h5 className="font-serif text-lg mb-8 text-white">Knowledge</h5>
               <ul className="space-y-4 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-primary transition-colors">Our Story</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Science</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Reviews</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Our Science</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Sourcing Map</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Journal</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Sustainability</a></li>
               </ul>
             </div>
 
             <div>
-              <h5 className="font-serif text-lg mb-6 text-white">Stay in the loop</h5>
-              <div className="flex gap-2">
-                <input 
-                  type="email" 
-                  placeholder="email@example.com" 
-                  className="bg-white/10 border-none rounded-md px-4 py-2 text-sm text-white placeholder:text-gray-500 w-full focus:ring-1 focus:ring-primary"
-                />
-                <Button className="bg-primary hover:bg-primary/90 text-white">
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-xs text-gray-500 mt-4">
-                Join our newsletter for science-backed wellness tips and exclusive offers.
-              </p>
+              <h5 className="font-serif text-lg mb-8 text-white">Support</h5>
+              <ul className="space-y-4 text-sm text-gray-400">
+                <li><a href="#" className="hover:text-primary transition-colors">UK Shipping & Returns</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Wholesale</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">FAQs</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Contact Us</a></li>
+              </ul>
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-8 mt-8">
-            <p className="text-[10px] text-gray-500 leading-relaxed mb-6 max-w-4xl mx-auto text-center border p-4 border-white/10 rounded-lg">
-              * FDA DISCLAIMER: These statements have not been evaluated by the Food and Drug Administration. 
-              This product is not intended to diagnose, treat, cure, or prevent any disease. 
-              Consult your physician before using this product if you are pregnant, nursing, taking medication, or have a medical condition.
-            </p>
-            
-            <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-400">
-              <p>&copy; 2026 Aura Health Inc. All rights reserved.</p>
-              <div className="flex gap-6 mt-4 md:mt-0">
-                <a href="#" className="hover:text-white">Privacy Policy</a>
-                <a href="#" className="hover:text-white">Terms of Service</a>
-                <a href="#" className="hover:text-white">Shipping & Returns</a>
+          <div className="border-t border-white/10 pt-12 text-center space-y-8">
+            <div className="max-w-3xl mx-auto space-y-4">
+              <p className="text-[9px] text-gray-500 leading-relaxed uppercase tracking-[0.1em]">
+                Food supplements should not be used as a substitute for a varied and balanced diet and a healthy lifestyle. 
+                Keep out of reach of young children. Do not exceed the recommended daily dose.
+              </p>
+              <p className="text-[9px] text-gray-500 uppercase tracking-[0.1em]">
+                * FDA / MHRA DISCLAIMER: These statements have not been evaluated by the MHRA. This product is not intended to diagnose, treat, cure, or prevent any disease.
+              </p>
+            </div>
+            <div className="flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-500 uppercase tracking-widest pt-8 border-t border-white/5">
+              <p>© 2026 Aura Health (UK) Limited.</p>
+              <div className="flex gap-8 mt-4 md:mt-0">
+                <a href="#" className="hover:text-white">Privacy</a>
+                <a href="#" className="hover:text-white">Terms</a>
+                <a href="#" className="hover:text-white">Accessibility</a>
               </div>
             </div>
           </div>
