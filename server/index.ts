@@ -92,12 +92,13 @@ app.use((req, res, next) => {
   const port = parseInt(process.env.PORT || "5000", 10);
   httpServer.listen(
     {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
+      port: 5001,           // Changed from port to 5001
+      host: "127.0.0.1",    // Changed from "0.0.0.0" to "127.0.0.1"
+      // reusePort: true,   // Comment this out or delete it
     },
     () => {
-      log(`serving on port ${port}`);
+      log(`Aura Health serving on http://127.0.0.1:5001`);
     },
   );
 })();
+
